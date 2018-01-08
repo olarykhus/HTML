@@ -1,0 +1,67 @@
+<html>
+<style>
+$w: 100vmax;
+$h: 7em;
+
+body {
+	overflow: hidden;
+	margin: 0;
+	height: 100vh;
+	perspective: 20em;
+	background: #000
+}
+
+div {
+	position: absolute;
+	transform-style: preserve-3d
+}
+
+.a3d {
+	--a: 5deg;
+	top: 50%; left: 50%;
+	animation: move var(--t) linear infinite
+}
+
+@keyframes move {
+	to {
+		transform: translatez($h)
+			rotate(calc(-1*var(--a)))
+	}
+}
+
+.ring {
+	transform: rotatex(90deg) 
+		translatey(calc((1 - var(--j))*#{$h})) 
+		rotatey(calc(var(--j)*var(--a)))
+}
+
+.segm {
+	margin: -.5*$h (-.5*$w);
+	width: $w; height: $h;
+	transform: rotatey(var(--ca))
+		translatez(calc(var(--f)*#{.5*$w}));
+	box-shadow: inset 0 0 5px rgba(#000, .5);
+	background: linear-gradient(orange, purple)
+}
+
+@keyframes fade { 
+	to { opacity: calc((var(--n) - var(--j))/var(--m)) }
+}
+</style>
+- var n = 29, ns = 5;
+- var ba = 360/ns, m = Math.round(.65*n);
+
+style
+	| :nth-child(-n + #{m}) > .segm {
+	| 	opacity: calc((var(--n) - var(--j) - 1)/var(--m));
+	|		animation: fade var(--t) infinite
+	| }
+	- for(var i = 1; i < ns; i++)
+		| .segm:nth-child(#{i + 1}) { --ca: #{i*ba}deg }
+.a3d(style=`--n: ${n}; --m: ${m}; --t: .5s; --ca: 0deg;
+						--f: ${1/Math.tan(Math.PI/ns)}`)
+	while n--
+		.ring(style=`--j: ${n}`)
+			- for(var i = 0; i < ns; i++)
+				.segm
+</html>
